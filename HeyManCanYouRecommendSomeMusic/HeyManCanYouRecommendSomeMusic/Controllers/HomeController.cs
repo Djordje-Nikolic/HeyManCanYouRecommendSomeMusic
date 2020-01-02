@@ -6,12 +6,15 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using HeyManCanYouRecommendSomeMusic.Models;
+using HeyManCanYouRecommendSomeMusic.Services;
 
 namespace HeyManCanYouRecommendSomeMusic.Controllers
 {
     [Route("home")]
     public class HomeController : Controller
     {
+        WebCrawlerService webCrawlerService = new WebCrawlerService();
+
         [Route("")]
         [Route("/")]
         [Route("index")]
@@ -21,9 +24,12 @@ namespace HeyManCanYouRecommendSomeMusic.Controllers
         }
 
         [HttpPost("submit")]
-        public string Submit([FromBody] string songUrl)
+        public async Task Submit([FromBody] string songUrl)
         {
-            return songUrl + " is a song";
+            string[] x = await webCrawlerService.GetSongName(songUrl);
+
+            string artust = x[0];
+            string song = x[1];
         } 
     }
 }
