@@ -14,6 +14,7 @@ namespace HeyManCanYouRecommendSomeMusic.Controllers
     public class HomeController : Controller
     {
         WebCrawlerService webCrawlerService = new WebCrawlerService();
+        IDBService dBService = new DBService();
 
         [Route("")]
         [Route("/")]
@@ -26,10 +27,11 @@ namespace HeyManCanYouRecommendSomeMusic.Controllers
         [HttpPost("submit")]
         public async Task Submit([FromBody] string songUrl)
         {
-            string[] x = await webCrawlerService.GetSongName(songUrl);
+            string[] artistAndName = await webCrawlerService.GetSongName(songUrl);
 
-            string artust = x[0];
-            string song = x[1];
+            Song song = new Song { Band = artistAndName[0], Name = artistAndName[1], Genre = "Doom" };
+            bool res = dBService.AddNewSong(song);
+
         } 
     }
 }
