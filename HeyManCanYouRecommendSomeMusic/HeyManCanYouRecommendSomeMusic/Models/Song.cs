@@ -7,9 +7,9 @@ namespace HeyManCanYouRecommendSomeMusic.Models
 {
     public class Song
     {
-        public string Id { get; set; }
-        public string Name { get; set; }
-        public string Band { get; set; }
-        public string Genre { get; set; }
+        public string id { get; set; }
+        public string name { get; set; }
+        public string band { get; set; }
+        public string genre { get; set; }
     }
 }

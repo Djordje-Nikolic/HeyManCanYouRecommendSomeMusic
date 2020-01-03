@@ -12,6 +12,10 @@ namespace HeyManCanYouRecommendSomeMusic.Services
     public interface IDBService
     {
         bool AddNewSong(Song s);
+        List<Song> GetSongsWithSameArtist(Song song, int limit = 5);
+        List<Song> GetSongsInSameGenre(Song song, int limit = 5);
+        Song GetSongById(int id);
+        void CreateRelationship(Song s1, Song s2, Relationship? rel);
     }
 
     public class DBService : IDBService
@@ -41,20 +45,20 @@ namespace HeyManCanYouRecommendSomeMusic.Services
             try
             {
                 int max = Int32.Parse(maxId);
-                song.Id = (++max).ToString();
+                song.id = (++max).ToString();
             }
             catch (Exception e)
             {
-                song.Id = "";
+                song.id = "";
             }
 
-            cypherDict.Add("id", song.Id);
-            cypherDict.Add("name", song.Name);
-            cypherDict.Add("band", song.Band);
-            cypherDict.Add("genre", song.Genre);
+            cypherDict.Add("id", song.id);
+            cypherDict.Add("name", song.name);
+            cypherDict.Add("band", song.band);
+            cypherDict.Add("genre", song.genre);
 
-            var cypher = new CypherQuery("CREATE(s: Song { id:'" + song.Id + "', name: '" + song.Name 
-                                                              + "', band:'" + song.Band + "', genre:'" + song.Genre
+            var cypher = new CypherQuery("CREATE(s: Song { id:'" + song.id + "', name: '" + song.name 
+                                                              + "', band:'" + song.band + "', genre:'" + song.genre
                                                               + "'}) return s",
                                         cypherDict, CypherResultMode.Set);
 
@@ -64,6 +68,58 @@ namespace HeyManCanYouRecommendSomeMusic.Services
                 return true;
 
             return false;
+        }
+
+        public List<Song> GetSongsWithSameArtist(Song song, int limit = 5)
+        {
+            Dictionary<string, object> queryDict = new Dictionary<string, object>();
+
+            queryDict.Add("band", song.band);
+
+            var cypher = new CypherQuery("MATCH (s:Song) WHERE s.band = {band} return s LIMIT " + limit,
+                                          queryDict, CypherResultMode.Set);
+
+            List<Song> songs = ((IRawGraphClient)client).ExecuteGetCypherResults<Song>(cypher).ToList();
+
+            return songs;
+        }
+
+        public List<Song> GetSongsInSameGenre(Song song, int limit = 5)
+        {
+            Dictionary<string, object> queryDict = new Dictionary<string, object>();
+            queryDict.Add("genre", song.genre);
+
+            var cypher = new CypherQuery("MATCH (s:Song) WHERE s.genre = {genre} return s LIMIT " + limit,
+                                          queryDict, CypherResultMode.Set);
+
+            List<Song> songs = ((IRawGraphClient)client).ExecuteGetCypherResults<Song>(cypher).ToList();
+
+            return songs;
+        }
+
+        public Song GetSongById(int id)
+        {
+            Dictionary<string, object> queryDict = new Dictionary<string, object>();
+            queryDict.Add("id", id.ToString());
+
+            var cypher = new CypherQuery("MATCH (s:Song) WHERE s.id = {id} return s ",
+                                          queryDict, CypherResultMode.Set);
+
+            Song s = ((IRawGraphClient)client).ExecuteGetCypherResults<Song>(cypher).FirstOrDefault();
+            return s;
+        }
+
+        public void CreateRelationship(Song s1, Song s2, Relationship? rel)
+        {
+            Dictionary<string, object> queryDict = new Dictionary<string, object>();
+            queryDict.Add("id1", s1.id);
+            queryDict.Add("id2", s2.id);
+
+            var cypher = new CypherQuery("MATCH (s1:Song), (s2:Song) " +
+                                         "WHERE s1.id = {id1} AND s2.id = {id2}" +
+                                          "CREATE (s1)-[:" + rel + "]->(s2)", queryDict, CypherResultMode.Set);
+
+            ((IRawGraphClient)client).ExecuteGetCypherResults<Relationship>(cypher);       
         }
 
         private string GetMaxId()

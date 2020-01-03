@@ -29,9 +29,11 @@ namespace HeyManCanYouRecommendSomeMusic.Controllers
         {
             string[] artistAndName = await webCrawlerService.GetSongName(songUrl);
 
-            Song song = new Song { Band = artistAndName[0], Name = artistAndName[1], Genre = "Doom" };
-            bool res = dBService.AddNewSong(song);
+            Song s1 = dBService.GetSongById(1);
+            Song s2 = dBService.GetSongById(3);
 
+            bool res = dBService.CreateRelationship(s1, s2, Relationship.DISTORTED);
+            string x = "dsa";
         } 
     }
 }
