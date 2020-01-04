@@ -30,6 +30,7 @@ namespace HeyManCanYouRecommendSomeMusic.Controllers
             string[] artistAndName = await webCrawlerService.GetSongName(songUrl);
 
             Song s = dBService.GetSongById(4);
+            List<Song> songss = dBService.GetSongsInRelationship(Relationship.DISTORTED, 5);
 
             List<Song> songs = dBService.GetSimilarSongs(s, Relationship.DISTORTED, 2);
 

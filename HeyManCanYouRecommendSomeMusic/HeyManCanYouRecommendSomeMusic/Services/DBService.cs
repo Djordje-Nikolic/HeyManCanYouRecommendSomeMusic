@@ -16,6 +16,7 @@ namespace HeyManCanYouRecommendSomeMusic.Services
         List<Song> GetSongsInSameGenre(Song song, int limit = 5);
         Song GetSongById(int id);
         void CreateRelationship(Song s1, Song s2, Relationship? rel);
+        List<Song> GetSongsInRelationship(Relationship rel, int count = 5);
         List<Song> GetSimilarSongs(Song song, Relationship rel, int depth = 0);
     }
 
@@ -121,6 +122,22 @@ namespace HeyManCanYouRecommendSomeMusic.Services
                                           "CREATE (s1)-[:" + rel + "]->(s2)", queryDict, CypherResultMode.Set);
 
             ((IRawGraphClient)client).ExecuteGetCypherResults<Relationship>(cypher);       
+        }
+
+        public List<Song> GetSongsInRelationship(Relationship rel, int count = 5)
+        {
+            Dictionary<string, object> queryDict = new Dictionary<string, object>();
+            var cypher = new CypherQuery("MATCH (s)-[:" + rel + "]-(s1) RETURN s LIMIT " + count, queryDict, CypherResultMode.Set);
+
+            try
+            {
+                List<Song> songs = ((IRawGraphClient)client).ExecuteGetCypherResults<Song>(cypher).GroupBy(s => s.id).Select(y => y.First()).ToList();
+                return songs;
+            }
+            catch(Exception e)
+            {
+                return null;
+            }
         }
 
         public List<Song> GetSimilarSongs(Song song, Relationship rel, int depth = 0)
