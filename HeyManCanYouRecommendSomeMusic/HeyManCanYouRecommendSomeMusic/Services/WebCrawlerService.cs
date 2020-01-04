@@ -46,6 +46,7 @@ namespace HeyManCanYouRecommendSomeMusic.Services
             string afterDash = songTitle.Substring(dashIndex);
             int delimiterIndex = afterDash.IndexOf('(');
             if (delimiterIndex == -1) delimiterIndex = afterDash.IndexOf('|');
+            if (delimiterIndex == -1) delimiterIndex = afterDash.IndexOf('[');
             arr[1] = afterDash.Substring(1, delimiterIndex - 1).Trim();
 
             return arr;
