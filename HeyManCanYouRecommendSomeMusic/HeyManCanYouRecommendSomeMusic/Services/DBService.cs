@@ -16,6 +16,7 @@ namespace HeyManCanYouRecommendSomeMusic.Services
         List<Song> GetSongsInSameGenre(Song song, int limit = 5);
         Song GetSongById(int id);
         void CreateRelationship(Song s1, Song s2, Relationship? rel);
+        List<Song> GetSimilarSongs(Song song, Relationship rel, int depth = 0);
     }
 
     public class DBService : IDBService
@@ -120,6 +121,47 @@ namespace HeyManCanYouRecommendSomeMusic.Services
                                           "CREATE (s1)-[:" + rel + "]->(s2)", queryDict, CypherResultMode.Set);
 
             ((IRawGraphClient)client).ExecuteGetCypherResults<Relationship>(cypher);       
+        }
+
+        public List<Song> GetSimilarSongs(Song song, Relationship rel, int depth = 0)
+        {
+            List<Song> songs = new List<Song>();
+            Dictionary<string, object> queryDict = new Dictionary<string, object>();
+            queryDict.Add("id", song.id);
+
+            string query = "MATCH (s0:Song)-[:" + rel + "]-(s1:Song) WHERE s0.id = {id} RETURN s1";
+            var cypher = new CypherQuery(query, queryDict, CypherResultMode.Set);
+            
+            try
+            {
+                songs.AddRange(((IRawGraphClient)client).ExecuteGetCypherResults<Song>(cypher).ToList());
+            }
+            catch(Exception e)
+            {
+                return null;
+            }
+
+            if(depth != 0)
+            {
+                string matchText = "MATCH (s0:Song)-[:" + rel + "]-";
+                string returnText = "(s1:Song) WHERE s0.id = {id} RETURN s1";
+
+                for(int i = 0; i < depth; i++)
+                {
+                    matchText += "()-[:" + rel + "]-";
+                    query = matchText + returnText;
+                    cypher = new CypherQuery(query, queryDict, CypherResultMode.Set);
+                    try
+                    {
+                        songs.AddRange(((IRawGraphClient)client).ExecuteGetCypherResults<Song>(cypher).ToList());
+                    }
+                    catch (Exception e)
+                    {
+                        return null;
+                    }
+                }
+            }
+            return songs;
         }
 
         private string GetMaxId()

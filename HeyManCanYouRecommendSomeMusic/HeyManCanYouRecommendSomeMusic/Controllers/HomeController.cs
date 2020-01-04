@@ -29,10 +29,10 @@ namespace HeyManCanYouRecommendSomeMusic.Controllers
         {
             string[] artistAndName = await webCrawlerService.GetSongName(songUrl);
 
-            Song s1 = dBService.GetSongById(1);
-            Song s2 = dBService.GetSongById(3);
+            Song s = dBService.GetSongById(4);
 
-            bool res = dBService.CreateRelationship(s1, s2, Relationship.DISTORTED);
+            List<Song> songs = dBService.GetSimilarSongs(s, Relationship.DISTORTED, 2);
+
             string x = "dsa";
         } 
     }
