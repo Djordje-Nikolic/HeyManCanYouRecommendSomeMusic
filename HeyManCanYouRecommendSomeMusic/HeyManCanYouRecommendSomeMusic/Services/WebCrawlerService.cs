@@ -27,7 +27,8 @@ namespace HeyManCanYouRecommendSomeMusic.Services
             HtmlDocument document = new HtmlDocument();
             document.LoadHtml(html);
 
-            string titleXPath = "(//title)";
+            //string titleXPath = "(//title)";
+            string titleXPath = "(//span[contains(@class,'watch-title')])";
             string songTitle = document.DocumentNode.SelectSingleNode(titleXPath).InnerText;
 
             if (songTitle == null)
@@ -38,6 +39,8 @@ namespace HeyManCanYouRecommendSomeMusic.Services
 
         private string[] ProccessString(string songTitle)
         {
+            songTitle = songTitle.Replace("\n", String.Empty);
+            songTitle.Trim();
             string[] arr = new string[2];
 
             int dashIndex = songTitle.IndexOf('-');
