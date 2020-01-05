@@ -16,7 +16,7 @@ namespace HeyManCanYouRecommendSomeMusic.Services
             HttpResponseMessage response = await httpClient.GetAsync(link);
 
             if (!response.IsSuccessStatusCode)
-                throw new ArgumentException("The requested link cannot be fetched");
+                throw new InvalidOperationException("The requested link cannot be fetched");
 
             string html = await response.Content.ReadAsStringAsync();
             return ProccessHtml(html);
@@ -41,13 +41,20 @@ namespace HeyManCanYouRecommendSomeMusic.Services
             string[] arr = new string[2];
 
             int dashIndex = songTitle.IndexOf('-');
+            if (dashIndex == -1)
+                throw new FormatException("Title of song does not contain a - delimiter");
+
             arr[0] = songTitle.Substring(0, dashIndex).Trim();
 
             string afterDash = songTitle.Substring(dashIndex);
             int delimiterIndex = afterDash.IndexOf('(');
             if (delimiterIndex == -1) delimiterIndex = afterDash.IndexOf('|');
             if (delimiterIndex == -1) delimiterIndex = afterDash.IndexOf('[');
-            arr[1] = afterDash.Substring(1, delimiterIndex - 1).Trim();
+
+            if (delimiterIndex == -1)
+                arr[1] = afterDash.Substring(1);
+            else
+                arr[1] = afterDash.Substring(1, delimiterIndex - 1).Trim();
 
             return arr;
         }
