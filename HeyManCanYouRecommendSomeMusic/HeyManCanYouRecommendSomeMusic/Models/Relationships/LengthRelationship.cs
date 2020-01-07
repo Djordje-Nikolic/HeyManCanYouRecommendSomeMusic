@@ -42,5 +42,54 @@ namespace HeyManCanYouRecommendSomeMusic.Models.Relationships
             else
                 return new LengthRelationship(LengthType.EXTRALONG);
         }
+
+        public static bool TestForRequirements(LengthType lengthType, Song song)
+        {
+            if (!int.TryParse(song.duration, out int duration))
+            {
+                return false;
+            }
+
+            switch (lengthType)
+            {
+                case LengthType.SHORT:
+                    if (duration < 180)
+                        return true;
+                    break;
+                case LengthType.MEDIUM:
+                    if (duration >= 180 && duration < 300)
+                        return true;
+                    break;
+                case LengthType.LONG:
+                    if (duration >= 300 && duration < 480)
+                        return true;
+                    break;
+                case LengthType.EXTRALONG:
+                    if (duration >= 480)
+                        return true;
+                    break;
+                default:
+                    return false;
+            }
+
+            return false;
+        }
+
+        public override Tuple<int, int> GetLimits()
+        {
+            switch (Type)
+            {
+                case LengthType.SHORT:
+                    return new Tuple<int, int>(1, 179);
+                case LengthType.MEDIUM:
+                    return new Tuple<int, int>(180, 299);
+                case LengthType.LONG:
+                    return new Tuple<int, int>(300, 479);
+                case LengthType.EXTRALONG:
+                    return new Tuple<int, int>(480, int.MaxValue);
+                default:
+                    return null;
+            }
+        }
     }
 }

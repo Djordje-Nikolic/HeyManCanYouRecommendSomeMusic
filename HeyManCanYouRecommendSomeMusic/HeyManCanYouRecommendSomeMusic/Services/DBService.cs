@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using HeyManCanYouRecommendSomeMusic.Models;
+using HeyManCanYouRecommendSomeMusic.Models.Relationships;
 
 namespace HeyManCanYouRecommendSomeMusic.Services
 {
@@ -15,9 +16,11 @@ namespace HeyManCanYouRecommendSomeMusic.Services
         List<Song> GetSongsWithSameArtist(Song song, int limit = 5);
         List<Song> GetSongsInSameGenre(Song song, int limit = 5);
         Song GetSongById(int id);
-        void CreateRelationship(Song s1, Song s2, Relationship rel);
-        List<Song> GetSongsInRelationship(Relationship rel, int count = 5);
-        List<Song> GetSimilarSongs(Song song, Relationship rel, int depth = 0);
+        void CreateRelationship(Song s1, Song s2, Models.Relationships.Relationship rel);
+        List<Song> GetSongsInRelationship(Models.Relationships.Relationship rel, int count = 5);
+        List<Song> GetSimilarSongs(Song song, Models.Relationships.Relationship rel, int depth = 0);
+        Song GetSongWithinDuration(int lowerLimit, int upperLimit);
+        Song GetSongWithinTempo(int lowerLimit, int upperLimit);
     }
 
     public class DBService : IDBService
@@ -111,7 +114,7 @@ namespace HeyManCanYouRecommendSomeMusic.Services
             return s;
         }
 
-        public void CreateRelationship(Song s1, Song s2, Relationship rel)
+        public void CreateRelationship(Song s1, Song s2, Models.Relationships.Relationship rel)
         {
             Dictionary<string, object> queryDict = new Dictionary<string, object>();
             queryDict.Add("id1", s1.id);
@@ -121,10 +124,10 @@ namespace HeyManCanYouRecommendSomeMusic.Services
                                          "WHERE s1.id = {id1} AND s2.id = {id2}" +
                                           "CREATE (s1)-[:" + rel.ToString() + "]->(s2)", queryDict, CypherResultMode.Set);
 
-            ((IRawGraphClient)client).ExecuteGetCypherResults<Relationship>(cypher);       
+            ((IRawGraphClient)client).ExecuteGetCypherResults<Models.Relationships.Relationship>(cypher);       
         }
 
-        public List<Song> GetSongsInRelationship(Relationship rel, int count = 5)
+        public List<Song> GetSongsInRelationship(Models.Relationships.Relationship rel, int count = 5)
         {
             Dictionary<string, object> queryDict = new Dictionary<string, object>();
             var cypher = new CypherQuery("MATCH (s)-[:" + rel.ToString() + "]-(s1) RETURN s LIMIT " + count, queryDict, CypherResultMode.Set);
@@ -140,7 +143,7 @@ namespace HeyManCanYouRecommendSomeMusic.Services
             }
         }
 
-        public List<Song> GetSimilarSongs(Song song, Relationship rel, int depth = 0)
+        public List<Song> GetSimilarSongs(Song song, Models.Relationships.Relationship rel, int depth = 0)
         {
             List<Song> songs = new List<Song>();
             Dictionary<string, object> queryDict = new Dictionary<string, object>();
@@ -189,6 +192,28 @@ namespace HeyManCanYouRecommendSomeMusic.Services
             string maxId = ((IRawGraphClient)client).ExecuteGetCypherResults<string>(query).ToList().FirstOrDefault();
 
             return maxId;
+        }
+
+        /// <summary>
+        /// Finds first node that represents a song which duration is within the specified limits.
+        /// </summary>
+        /// <param name="lowerLimit"></param>
+        /// <param name="upperLimit"></param>
+        /// <returns>Returns a Song object if a node that satifies the specified limits is found, otherwise returns null.</returns>
+        public Song GetSongWithinDuration(int lowerLimit, int upperLimit)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// Find the first note that represents a song which bpm is within the specified limits.
+        /// </summary>
+        /// <param name="lowerLimit"></param>
+        /// <param name="upperLimit"></param>
+        /// <returns>Returns a Song object if a node that satifies the specified limits is found, otherwise returns null.</returns>
+        public Song GetSongWithinTempo(int lowerLimit, int upperLimit)
+        {
+            throw new NotImplementedException();
         }
     }
 }

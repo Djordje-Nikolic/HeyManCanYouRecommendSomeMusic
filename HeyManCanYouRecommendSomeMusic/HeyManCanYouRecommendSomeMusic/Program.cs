@@ -10,6 +10,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using HeyManCanYouRecommendSomeMusic.Helpers;
 using System.IO;
+using HeyManCanYouRecommendSomeMusic.Models;
 
 namespace HeyManCanYouRecommendSomeMusic
 {

@@ -9,6 +9,8 @@ namespace HeyManCanYouRecommendSomeMusic.Models.Relationships
     {
         public abstract string GetName();
 
+        public abstract Tuple<int, int> GetLimits();
+
         public override string ToString()
         {
             return GetName();
