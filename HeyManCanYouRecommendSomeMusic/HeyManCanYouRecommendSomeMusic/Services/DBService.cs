@@ -15,7 +15,7 @@ namespace HeyManCanYouRecommendSomeMusic.Services
         List<Song> GetSongsWithSameArtist(Song song, int limit = 5);
         List<Song> GetSongsInSameGenre(Song song, int limit = 5);
         Song GetSongById(int id);
-        void CreateRelationship(Song s1, Song s2, Relationship? rel);
+        void CreateRelationship(Song s1, Song s2, Relationship rel);
         List<Song> GetSongsInRelationship(Relationship rel, int count = 5);
         List<Song> GetSimilarSongs(Song song, Relationship rel, int depth = 0);
     }
@@ -111,7 +111,7 @@ namespace HeyManCanYouRecommendSomeMusic.Services
             return s;
         }
 
-        public void CreateRelationship(Song s1, Song s2, Relationship? rel)
+        public void CreateRelationship(Song s1, Song s2, Relationship rel)
         {
             Dictionary<string, object> queryDict = new Dictionary<string, object>();
             queryDict.Add("id1", s1.id);
@@ -119,7 +119,7 @@ namespace HeyManCanYouRecommendSomeMusic.Services
 
             var cypher = new CypherQuery("MATCH (s1:Song), (s2:Song) " +
                                          "WHERE s1.id = {id1} AND s2.id = {id2}" +
-                                          "CREATE (s1)-[:" + rel + "]->(s2)", queryDict, CypherResultMode.Set);
+                                          "CREATE (s1)-[:" + rel.ToString() + "]->(s2)", queryDict, CypherResultMode.Set);
 
             ((IRawGraphClient)client).ExecuteGetCypherResults<Relationship>(cypher);       
         }
@@ -127,7 +127,7 @@ namespace HeyManCanYouRecommendSomeMusic.Services
         public List<Song> GetSongsInRelationship(Relationship rel, int count = 5)
         {
             Dictionary<string, object> queryDict = new Dictionary<string, object>();
-            var cypher = new CypherQuery("MATCH (s)-[:" + rel + "]-(s1) RETURN s LIMIT " + count, queryDict, CypherResultMode.Set);
+            var cypher = new CypherQuery("MATCH (s)-[:" + rel.ToString() + "]-(s1) RETURN s LIMIT " + count, queryDict, CypherResultMode.Set);
 
             try
             {
@@ -146,7 +146,7 @@ namespace HeyManCanYouRecommendSomeMusic.Services
             Dictionary<string, object> queryDict = new Dictionary<string, object>();
             queryDict.Add("id", song.id);
 
-            string query = "MATCH (s0:Song)-[:" + rel + "]-(s1:Song) WHERE s0.id = {id} RETURN s1";
+            string query = "MATCH (s0:Song)-[:" + rel.ToString() + "]-(s1:Song) WHERE s0.id = {id} RETURN s1";
             var cypher = new CypherQuery(query, queryDict, CypherResultMode.Set);
             
             try
@@ -160,7 +160,7 @@ namespace HeyManCanYouRecommendSomeMusic.Services
 
             if(depth != 0)
             {
-                string matchText = "MATCH (s0:Song)-[:" + rel + "]-";
+                string matchText = "MATCH (s0:Song)-[:" + rel.ToString() + "]-";
                 string returnText = "(s1:Song) WHERE s0.id = {id} RETURN s1";
 
                 for(int i = 0; i < depth; i++)

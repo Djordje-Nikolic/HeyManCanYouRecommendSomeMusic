@@ -5,8 +5,6 @@ using System.Threading.Tasks;
 
 namespace HeyManCanYouRecommendSomeMusic
 {
-    public enum Relationship { DRONING, SLOW, HEAVY, DISTORTED }
-
     public static class Settings
     {
         public const string DB_URI = "http://localhost:7474/db/data";

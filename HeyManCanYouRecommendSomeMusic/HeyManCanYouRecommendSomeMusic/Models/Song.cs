@@ -11,5 +11,7 @@ namespace HeyManCanYouRecommendSomeMusic.Models
         public string name { get; set; }
         public string band { get; set; }
         public string genre { get; set; }
+        public string duration { get; set; }
+        public string bpm { get; set; }
     }
 }
