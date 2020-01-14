@@ -61,10 +61,12 @@ namespace HeyManCanYouRecommendSomeMusic.Services
             cypherDict.Add("name", song.name);
             cypherDict.Add("band", song.band);
             cypherDict.Add("genre", song.genre);
+            cypherDict.Add("duration", song.duration);
+            cypherDict.Add("bpm", song.bpm);
 
             var cypher = new CypherQuery("CREATE(s: Song { id:'" + song.id + "', name: '" + song.name 
                                                               + "', band:'" + song.band + "', genre:'" + song.genre
-                                                              + "'}) return s",
+                                                              + "', duration:'" + song.duration + "', bpm:'" + song.bpm + "'}) return s",
                                         cypherDict, CypherResultMode.Set);
 
             Song s = ((IRawGraphClient)client).ExecuteGetCypherResults<Song>(cypher).FirstOrDefault();
@@ -202,7 +204,16 @@ namespace HeyManCanYouRecommendSomeMusic.Services
         /// <returns>Returns a Song object if a node that satifies the specified limits is found, otherwise returns null.</returns>
         public Song GetSongWithinDuration(int lowerLimit, int upperLimit)
         {
-            throw new NotImplementedException();
+            Song song = null;
+            Dictionary<string, object> queryDict = new Dictionary<string, object>();
+            queryDict.Add("lowerLimit", lowerLimit);
+            queryDict.Add("upperLimit", upperLimit);
+
+            var cypher = new CypherQuery("MATCH (s:Song) WHERE toInteger(s.duration) > {lowerLimit} AND toInteger(s.duration) < {upperLimit} RETURN s ",
+                                            queryDict, CypherResultMode.Set);
+
+            song = ((IRawGraphClient)client).ExecuteGetCypherResults<Song>(cypher).FirstOrDefault();
+            return song;
         }
 
         /// <summary>
@@ -213,7 +224,16 @@ namespace HeyManCanYouRecommendSomeMusic.Services
         /// <returns>Returns a Song object if a node that satifies the specified limits is found, otherwise returns null.</returns>
         public Song GetSongWithinTempo(int lowerLimit, int upperLimit)
         {
-            throw new NotImplementedException();
+            Song song = null;
+            Dictionary<string, object> queryDict = new Dictionary<string, object>();
+            queryDict.Add("lowerLimit", lowerLimit);
+            queryDict.Add("upperLimit", upperLimit);
+
+            var cypher = new CypherQuery("MATCH (s:Song) WHERE toInteger(s.bpm) > {lowerLimit} AND toInteger(s.bpm) < {upperLimit} RETURN s ",
+                                            queryDict, CypherResultMode.Set);
+
+            song = ((IRawGraphClient)client).ExecuteGetCypherResults<Song>(cypher).FirstOrDefault();
+            return song;
         }
     }
 }

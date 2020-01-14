@@ -9,6 +9,8 @@ using HeyManCanYouRecommendSomeMusic.Models;
 using HeyManCanYouRecommendSomeMusic.Models.Deezer;
 using HeyManCanYouRecommendSomeMusic.Services;
 using System.IO;
+using HeyManCanYouRecommendSomeMusic.Helpers;
+using HeyManCanYouRecommendSomeMusic.Models.Relationships;
 
 namespace HeyManCanYouRecommendSomeMusic.Controllers
 {
@@ -28,29 +30,49 @@ namespace HeyManCanYouRecommendSomeMusic.Controllers
         }
 
         [HttpPost("submit")]
-        public async Task Submit([FromBody] string songUrl)
+        public async Task<JsonResult> Submit([FromBody] string songUrl)
         {
-            //string[] artistAndName = await webCrawlerService.GetSongName(songUrl);
-
-            //Song s = dBService.GetSongById(4);
-            //List<Song> songss = dBService.GetSongsInRelationship(Relationship.DISTORTED, 5);
-
-            //List<Song> songs = dBService.GetSimilarSongs(s, Relationship.DISTORTED, 2);
-
-            //string x = "dsa";
-
-            var result = await deezerService.FetchForEachGenre(10);
-
-            using (FileStream fileStream = new FileStream("C:\\deezeroutput.txt", FileMode.Create))
+            string[] artistAndName = new string[2];
+            try
             {
-                using (StreamWriter streamWriter = new StreamWriter(fileStream))
-                {
-                    foreach (var r in result.Values)
-                    {
-                        streamWriter.WriteLine($"Name: {r.Title} Album: {r.Album.Title} Genre: {r.Album.Genres.Data.First().Name} Artist: {r.Artist.Name} Bpm: {r.Bpm}");
-                    }
-                }
+                artistAndName = await GetSong(songUrl);
             }
+            catch(Exception e)
+            {
+                return new JsonResult(new { succ = false, msg = e.Message });
+            }
+
+            Song song = new Song { band = artistAndName[0], name = artistAndName[1] };
+
+            List<Song> artistSongs = dBService.GetSongsWithSameArtist(song);
+            List<Song> genreSongs = dBService.GetSongsInSameGenre(song);
+            
+            return new JsonResult(new
+            {
+                succ = true,
+                artist = artistSongs,
+                genre = genreSongs
+            });
         } 
+
+        [HttpPost("submit-new")]
+        public JsonResult Submit([FromBody] Song song)
+        {
+            bool res = dBService.AddNewSong(song);
+
+            return new JsonResult(new { succ = res });
+        }
+
+        private async Task<string[]> GetSong(string link)
+        {
+            string[] artistAndName = await webCrawlerService.GetSongName(link);
+            return artistAndName;
+        }
+
+        async Task Deezer()
+        {
+            var populator = new DBPopulator(dBService, deezerService);
+            await populator.PopulateForAllGenres(3);
+        }
     }
 }
