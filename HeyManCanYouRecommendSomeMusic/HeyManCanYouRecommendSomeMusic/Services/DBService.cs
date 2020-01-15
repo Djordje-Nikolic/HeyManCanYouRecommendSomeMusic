@@ -15,12 +15,13 @@ namespace HeyManCanYouRecommendSomeMusic.Services
         bool AddNewSong(Song s);
         List<Song> GetSongsWithSameArtist(Song song, int limit = 5);
         List<Song> GetSongsInSameGenre(Song song, int limit = 5);
+        Song GetSongByNameAndArtist(string name, string artist);
         Song GetSongById(int id);
         void CreateRelationship(Song s1, Song s2, Models.Relationships.Relationship rel);
         List<Song> GetSongsInRelationship(Models.Relationships.Relationship rel, int count = 5);
         List<Song> GetSimilarSongs(Song song, Models.Relationships.Relationship rel, int depth = 0);
-        Song GetSongWithinDuration(int lowerLimit, int upperLimit);
-        Song GetSongWithinTempo(int lowerLimit, int upperLimit);
+        List<Song> GetSongWithinDuration(int lowerLimit, int upperLimit);
+        List<Song> GetSongWithinTempo(int lowerLimit, int upperLimit);
     }
 
     public class DBService : IDBService
@@ -102,6 +103,19 @@ namespace HeyManCanYouRecommendSomeMusic.Services
             List<Song> songs = ((IRawGraphClient)client).ExecuteGetCypherResults<Song>(cypher).ToList();
 
             return songs;
+        }
+
+        public Song GetSongByNameAndArtist(string name, string artist)
+        {
+            Dictionary<string, object> queryDict = new Dictionary<string, object>();
+            queryDict.Add("name", name);
+            queryDict.Add("artist", artist);
+
+            var cypher = new CypherQuery("MATCH (s:Song) WHERE s.name = {name} AND s.band = {artist} return s ",
+                                          queryDict, CypherResultMode.Set);
+
+            Song s = ((IRawGraphClient)client).ExecuteGetCypherResults<Song>(cypher).FirstOrDefault();
+            return s;
         }
 
         public Song GetSongById(int id)
@@ -196,15 +210,10 @@ namespace HeyManCanYouRecommendSomeMusic.Services
             return maxId;
         }
 
-        /// <summary>
-        /// Finds first node that represents a song which duration is within the specified limits.
-        /// </summary>
-        /// <param name="lowerLimit"></param>
-        /// <param name="upperLimit"></param>
-        /// <returns>Returns a Song object if a node that satifies the specified limits is found, otherwise returns null.</returns>
-        public Song GetSongWithinDuration(int lowerLimit, int upperLimit)
+        public List<Song> GetSongWithinDuration(int lowerLimit, int upperLimit)
         {
-            Song song = null;
+            if (lowerLimit <= 0) lowerLimit = 1;
+
             Dictionary<string, object> queryDict = new Dictionary<string, object>();
             queryDict.Add("lowerLimit", lowerLimit);
             queryDict.Add("upperLimit", upperLimit);
@@ -212,19 +221,14 @@ namespace HeyManCanYouRecommendSomeMusic.Services
             var cypher = new CypherQuery("MATCH (s:Song) WHERE toInteger(s.duration) > {lowerLimit} AND toInteger(s.duration) < {upperLimit} RETURN s ",
                                             queryDict, CypherResultMode.Set);
 
-            song = ((IRawGraphClient)client).ExecuteGetCypherResults<Song>(cypher).FirstOrDefault();
-            return song;
+            List<Song> songs = ((IRawGraphClient)client).ExecuteGetCypherResults<Song>(cypher).ToList();
+            return songs;
         }
 
-        /// <summary>
-        /// Find the first note that represents a song which bpm is within the specified limits.
-        /// </summary>
-        /// <param name="lowerLimit"></param>
-        /// <param name="upperLimit"></param>
-        /// <returns>Returns a Song object if a node that satifies the specified limits is found, otherwise returns null.</returns>
-        public Song GetSongWithinTempo(int lowerLimit, int upperLimit)
+        public List<Song> GetSongWithinTempo(int lowerLimit, int upperLimit)
         {
-            Song song = null;
+            if (lowerLimit <= 0) lowerLimit = 1;
+
             Dictionary<string, object> queryDict = new Dictionary<string, object>();
             queryDict.Add("lowerLimit", lowerLimit);
             queryDict.Add("upperLimit", upperLimit);
@@ -232,8 +236,8 @@ namespace HeyManCanYouRecommendSomeMusic.Services
             var cypher = new CypherQuery("MATCH (s:Song) WHERE toInteger(s.bpm) > {lowerLimit} AND toInteger(s.bpm) < {upperLimit} RETURN s ",
                                             queryDict, CypherResultMode.Set);
 
-            song = ((IRawGraphClient)client).ExecuteGetCypherResults<Song>(cypher).FirstOrDefault();
-            return song;
+            List<Song> songs = ((IRawGraphClient)client).ExecuteGetCypherResults<Song>(cypher).ToList();
+            return songs;
         }
     }
 }

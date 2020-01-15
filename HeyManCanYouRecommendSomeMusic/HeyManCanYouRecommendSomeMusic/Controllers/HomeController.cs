@@ -43,16 +43,33 @@ namespace HeyManCanYouRecommendSomeMusic.Controllers
                 return new JsonResult(new { succ = false, msg = e.Message });
             }
 
-            Song song = new Song { band = artistAndName[0], name = artistAndName[1] };
-
-            List<Song> artistSongs = dBService.GetSongsWithSameArtist(song);
-            List<Song> genreSongs = dBService.GetSongsInSameGenre(song);
+            Song song = dBService.GetSongByNameAndArtist(artistAndName[1], artistAndName[0]);
+            if (song == null)
+                return new JsonResult(new
+                {
+                    succ = false,
+                    msg = "Cannot find song in database"
+                });
             
+            List<Song> artistSongs = dBService.GetSongsWithSameArtist(song);
+            artistSongs.Remove(artistSongs.FirstOrDefault(s => s.name == song.name));
+
+            List<Song> genreSongs = dBService.GetSongsInSameGenre(song);
+            genreSongs.Remove(genreSongs.FirstOrDefault(s => s.name == song.name));
+
+            List<Song> bpmSongs = dBService.GetSongWithinTempo(Int32.Parse(song.bpm) - 30, Int32.Parse(song.bpm) + 30);
+            bpmSongs.Remove(bpmSongs.FirstOrDefault(s => s.name == song.name));
+
+            List<Song> durationSongs = dBService.GetSongWithinDuration(Int32.Parse(song.duration) - 60, Int32.Parse(song.duration) + 60);
+            durationSongs.Remove(durationSongs.FirstOrDefault(s => s.name == song.name));
+
             return new JsonResult(new
             {
                 succ = true,
                 artist = artistSongs,
-                genre = genreSongs
+                genre = genreSongs,
+                bpm = bpmSongs,
+                duration = durationSongs
             });
         } 
 
