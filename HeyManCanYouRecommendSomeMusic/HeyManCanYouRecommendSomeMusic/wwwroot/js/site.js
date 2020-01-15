@@ -87,11 +87,13 @@ function updateSongLists(data) {
 	var tableGenre = document.getElementById("SongListsGenre");
 	var tableDuration = document.getElementById("SongListsDuration");
 	var tableBpm = document.getElementById("SongListsBpm");
+	var tableRelationship = document.getElementById("SongListsRelationship");
 
 	tableArtist.innerHTML += "<tbody>";
 	tableGenre.innerHTML += "<tbody>";
 	tableDuration.innerHTML += "<tbody>";
 	tableBpm.innerHTML += "<tbody>";
+	tableRelationship.innerHTML += "<tbody>";
 	data.artist.forEach(song => {
 		tableArtist.innerHTML += "<tr><td>" +
 			song.band +
@@ -126,10 +128,18 @@ function updateSongLists(data) {
 			song.bpm +
 			"</td></tr>";
 	});
+	data.relationship.forEach(song => {
+		tableRelationship.innerHTML += "<tr><td>" +
+			song.band +
+			"</td><td>" +
+			song.name +
+			"</td><td></tr>";
+	});
 	tableArtist.innerHTML += "</tbody>";
 	tableGenre.innerHTML += "</tbody>";
 	tableDuration.innerHTML += "</tbody>";
 	tableBpm.innerHTML += "</tbody>";
+	tableRelationship.innerHTML += "</tbody>";
 }
 
 function refreshSongLists() {
@@ -139,10 +149,13 @@ function refreshSongLists() {
 	var tableGenre = document.getElementById("SongListsGenre");
 	var tableDuration = document.getElementById("SongListsDuration");
 	var tableBpm = document.getElementById("SongListsBpm");
+	var tableRelationship = document.getElementById("SongListsRelationship");
 
 	tableArtist.innerHTML =
 		"<thead><tr><th scope=\"col\">Artist</th><th scope=\"col\">Song</th></tr></thead>";
-	tableGenre.innerHTML = "<thead><tr><th scope=\"col\">Artist</th><th scope=\"col\">Song</th><th scope=\"col\">Genre</th></tr></thead>";;
-	tableDuration.innerHTML = "<thead><tr><th scope=\"col\">Artist</th><th scope=\"col\">Song</th><th scope=\"col\">Duration</th></tr></thead>";;
-	tableBpm.innerHTML = "<thead><tr><th scope=\"col\">Artist</th><th scope=\"col\">Song</th><th scope=\"col\">Bpm</th></tr></thead>";;
+	tableGenre.innerHTML = "<thead><tr><th scope=\"col\">Artist</th><th scope=\"col\">Song</th><th scope=\"col\">Genre</th></tr></thead>";
+	tableDuration.innerHTML = "<thead><tr><th scope=\"col\">Artist</th><th scope=\"col\">Song</th><th scope=\"col\">Duration</th></tr></thead>";
+	tableBpm.innerHTML = "<thead><tr><th scope=\"col\">Artist</th><th scope=\"col\">Song</th><th scope=\"col\">Bpm</th></tr></thead>";
+	tableRelationship.innerHTML =
+		"<thead><tr><th scope=\"col\">Artist</th><th scope=\"col\">Song</th></tr></thead>";
 }
