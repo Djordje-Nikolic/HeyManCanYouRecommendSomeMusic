@@ -1,7 +1,26 @@
 ﻿let submitEndpoint = "home/submit";
 let submitNewEndpoint = "home/submit-new";
+let populateEndpoint = "home/populate";
+
+document.getElementById('populate').onclick = populateDB;
+
+function populateDB() {
+	document.getElementById('info').innerHTML = "Please wait...";
+	fetch(populateEndpoint, {
+		method: 'POST',
+		headers: {
+			'Accept': 'application/json',
+			'Content-Type': 'application/json'
+		},
+		body: {}
+	})
+		.then(res => res.json())
+		.then(data => document.getElementById('info').innerHTML = "Database populated!")
+}
 
 function submitSong() {
+
+	document.getElementById('info').innerHTML = "Please wait...";
 
     let body = {
         songUrl: document.getElementById('songInput').value
@@ -74,7 +93,8 @@ function updateText(text) {
 }
 
 function updateSongLists(data) {
-	/*console.log(data);*/
+/*console.log(data);*/
+	document.getElementById('info').innerHTML = "";
 	if (data.succ == false) {
 		document.getElementById("NewSongForm").style.display = "block";
 		document.getElementById("SongLists").style.display = "none";

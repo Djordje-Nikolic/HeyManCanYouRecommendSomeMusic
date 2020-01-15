@@ -89,7 +89,7 @@ namespace HeyManCanYouRecommendSomeMusic.Controllers
         {
             bool res = dBService.AddNewSong(song);
 
-            if (song.genre.Contains("Doom"))
+            if (song.genre.Contains("etal"))
             {
                 if (Int32.Parse(song.bpm) < 110)
                 {
@@ -119,9 +119,10 @@ namespace HeyManCanYouRecommendSomeMusic.Controllers
         }
 
         [HttpPost("populate")]
-        public async Task Populate()
+        public async Task<JsonResult> Populate()
         {
-            await Deezer();
+            //await Deezer();
+            return new JsonResult(new { succ = true });
         }
 
         private async Task<string[]> GetSong(string link)
