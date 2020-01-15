@@ -1,0 +1,29 @@
+﻿
+@*
+    For more information on enabling MVC for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
+*@
+
+	<h2>No such song in our database. Please, add it manually.</h2>
+	<form action="javascript:void(0)" method="post" onsubmit="submitNewSong()">
+		<div class="form-group">
+			<label for="SongNameInput">Name of the song</label>
+			<input type="text" class="form-control" id="SongNameInput" placeholder="Song Name">
+		</div>
+		<div class="form-group">
+			<label for="ArtistInput">Artist</label>
+			<input type="text" class="form-control" id="ArtistInput" placeholder="Artist">
+		</div>
+		<div class="form-group">
+			<label for="GenreInput">Genre</label>
+			<input type="text" class="form-control" id="GenreInput" placeholder="Genre">
+		</div>
+		<div class="form-group">
+			<label for="DurationInput">Duration of the song</label>
+			<input type="time" class="form-control" id="DurationInput" placeholder="Duration">
+		</div>
+		<div class="form-group">
+			<label for="BpmInput">Bpm of the song</label>
+			<input type="number" class="form-control" id="BpmInput" placeholder="Bpm">
+		</div>
+		<button type="submit" class="btn btn-primary">Submit New Song</button>
+	</form>

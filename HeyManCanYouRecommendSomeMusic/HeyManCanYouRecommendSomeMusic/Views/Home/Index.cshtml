@@ -3,9 +3,17 @@
 }
 
 <div>
-    <form action="javascript:void(0)" method="post" onsubmit="submitSong()">
-        <input type="text" id="songInput"/>
-        <input type="submit" value="SUBMIT" />
-    </form>
-    <div id="SongName"></div>
+	<form action="javascript:void(0)" method="post" onsubmit="submitSong()">
+		<input type="text" id="songInput"/>
+		<input type="submit" value="SUBMIT" />
+	</form>
+	<div id="SongName"></div>
+</div>
+
+<div id="SongLists" style="display:none">
+	@Html.Partial("_SongLists")
+</div>
+
+<div id="NewSongForm" style="display:none">
+	@Html.Partial("_NewSongForm")
 </div>

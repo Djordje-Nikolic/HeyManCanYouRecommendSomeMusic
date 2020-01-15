@@ -25,7 +25,8 @@ namespace HeyManCanYouRecommendSomeMusic.Controllers
         [Route("/")]
         [Route("index")]
         public IActionResult Index()
-        {
+		{ 
+			/*Deezer();*/
             return View();
         }
 
