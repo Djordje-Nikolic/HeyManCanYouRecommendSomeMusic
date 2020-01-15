@@ -53,6 +53,8 @@ namespace HeyManCanYouRecommendSomeMusic.Services
             int delimiterIndex = afterDash.IndexOf('(');
             if (delimiterIndex == -1) delimiterIndex = afterDash.IndexOf('|');
             if (delimiterIndex == -1) delimiterIndex = afterDash.IndexOf('[');
+            if (delimiterIndex == -1) delimiterIndex = afterDash.IndexOf('-');
+
 
             if (delimiterIndex == -1)
                 arr[1] = afterDash.Substring(1);

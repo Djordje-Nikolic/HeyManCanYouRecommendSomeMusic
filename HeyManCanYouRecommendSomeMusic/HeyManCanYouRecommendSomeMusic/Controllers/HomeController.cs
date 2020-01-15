@@ -63,13 +63,24 @@ namespace HeyManCanYouRecommendSomeMusic.Controllers
             List<Song> durationSongs = dBService.GetSongWithinDuration(Int32.Parse(song.duration) - 60, Int32.Parse(song.duration) + 60);
             durationSongs.Remove(durationSongs.FirstOrDefault(s => s.name == song.name));
 
+            Random r = new Random();
+            r.Next(0, Enum.GetValues(typeof(MiscRelationship)).Length - 1);
+
+            Array values = Enum.GetValues(typeof(MiscRelationship));
+            Random random = new Random();
+            MiscRelationship randomRel = (MiscRelationship)values.GetValue(random.Next(values.Length));
+
+            List<Song> similarSongs = dBService.GetSimilarSongs(song, randomRel);
+            similarSongs.Remove(similarSongs.FirstOrDefault(s => s.name == song.name));
+
             return new JsonResult(new
             {
                 succ = true,
                 artist = artistSongs,
                 genre = genreSongs,
                 bpm = bpmSongs,
-                duration = durationSongs
+                duration = durationSongs,
+                similar = similarSongs
             });
         } 
 

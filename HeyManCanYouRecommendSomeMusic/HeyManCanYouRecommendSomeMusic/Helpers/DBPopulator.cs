@@ -51,11 +51,11 @@ namespace HeyManCanYouRecommendSomeMusic.Helpers
 
                         if (type == typeof(LengthRelationship))
                         {
-                            foundSong = dbService.GetSongWithinDuration(lowerLimit, upperLimit);
+                            foundSong = dbService.GetSongWithinDuration(lowerLimit, upperLimit).FirstOrDefault();
                         }
                         else if (type == typeof(TempoRelationship))
                         {
-                            foundSong = dbService.GetSongWithinTempo(lowerLimit, upperLimit);
+                            foundSong = dbService.GetSongWithinTempo(lowerLimit, upperLimit).FirstOrDefault();
                         }
                         else
                             throw new ArgumentException();

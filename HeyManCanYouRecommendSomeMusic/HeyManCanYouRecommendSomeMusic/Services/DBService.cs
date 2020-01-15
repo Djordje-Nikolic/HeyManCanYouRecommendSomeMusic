@@ -19,7 +19,7 @@ namespace HeyManCanYouRecommendSomeMusic.Services
         Song GetSongById(int id);
         void CreateRelationship(Song s1, Song s2, Models.Relationships.Relationship rel);
         List<Song> GetSongsInRelationship(Models.Relationships.Relationship rel, int count = 5);
-        List<Song> GetSimilarSongs(Song song, Models.Relationships.Relationship rel, int depth = 0);
+        List<Song> GetSimilarSongs(Song song, MiscRelationship rel, int depth = 0);
         List<Song> GetSongWithinDuration(int lowerLimit, int upperLimit);
         List<Song> GetSongWithinTempo(int lowerLimit, int upperLimit);
     }
@@ -159,7 +159,7 @@ namespace HeyManCanYouRecommendSomeMusic.Services
             }
         }
 
-        public List<Song> GetSimilarSongs(Song song, Models.Relationships.Relationship rel, int depth = 0)
+        public List<Song> GetSimilarSongs(Song song, MiscRelationship rel, int depth = 0)
         {
             List<Song> songs = new List<Song>();
             Dictionary<string, object> queryDict = new Dictionary<string, object>();
