@@ -64,11 +64,11 @@ namespace HeyManCanYouRecommendSomeMusic.Controllers
             durationSongs.Remove(durationSongs.FirstOrDefault(s => s.name == song.name));
 
             Random r = new Random();
-            r.Next(0, Enum.GetValues(typeof(MiscRelationship)).Length - 1);
+            r.Next(0, Enum.GetValues(typeof(MetalRelationship.MetalRelationshipType)).Length - 1);
 
-            Array values = Enum.GetValues(typeof(MiscRelationship));
+            Array values = Enum.GetValues(typeof(MetalRelationship.MetalRelationshipType));
             Random random = new Random();
-            MiscRelationship randomRel = (MiscRelationship)values.GetValue(random.Next(values.Length));
+            MetalRelationship randomRel = new MetalRelationship((MetalRelationship.MetalRelationshipType)values.GetValue(random.Next(values.Length)));
 
             List<Song> similarSongs = dBService.GetSimilarSongs(song, randomRel);
             similarSongs.Remove(similarSongs.FirstOrDefault(s => s.name == song.name));
@@ -89,7 +89,39 @@ namespace HeyManCanYouRecommendSomeMusic.Controllers
         {
             bool res = dBService.AddNewSong(song);
 
+            if (song.genre.Contains("Doom"))
+            {
+                if (Int32.Parse(song.bpm) < 110)
+                {
+                    Song s1 = dBService.GetSongByNameAndArtist(song.name, song.band);
+                    Song s2 = dBService.GetSongsInSameGenre(s1).FirstOrDefault();
+
+                    dBService.CreateRelationship(s1, s2, new MetalRelationship(MetalRelationship.MetalRelationshipType.DRONING));
+                }
+                else if(Int32.Parse(song.bpm) > 170)
+                {
+                    Song s1 = dBService.GetSongByNameAndArtist(song.name, song.band);
+                    Song s2 = dBService.GetSongsInSameGenre(s1).FirstOrDefault();
+
+                    dBService.CreateRelationship(s1, s2, new MetalRelationship(MetalRelationship.MetalRelationshipType.ENERGETIC));
+                }
+                
+                if(Int32.Parse(song.duration) > 600)
+                {
+                    Song s1 = dBService.GetSongByNameAndArtist(song.name, song.band);
+                    Song s2 = dBService.GetSongsInSameGenre(s1).FirstOrDefault();
+
+                    dBService.CreateRelationship(s1, s2, new MetalRelationship(MetalRelationship.MetalRelationshipType.EPIC));
+                }
+            }
+
             return new JsonResult(new { succ = res });
+        }
+
+        [HttpPost("populate")]
+        public async Task Populate()
+        {
+            await Deezer();
         }
 
         private async Task<string[]> GetSong(string link)

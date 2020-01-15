@@ -7,6 +7,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using HeyManCanYouRecommendSomeMusic.Models;
 using HeyManCanYouRecommendSomeMusic.Models.Relationships;
+using Relationship = HeyManCanYouRecommendSomeMusic.Models.Relationships.Relationship;
 
 namespace HeyManCanYouRecommendSomeMusic.Services
 {
@@ -19,7 +20,7 @@ namespace HeyManCanYouRecommendSomeMusic.Services
         Song GetSongById(int id);
         void CreateRelationship(Song s1, Song s2, Models.Relationships.Relationship rel);
         List<Song> GetSongsInRelationship(Models.Relationships.Relationship rel, int count = 5);
-        List<Song> GetSimilarSongs(Song song, MiscRelationship rel, int depth = 0);
+        List<Song> GetSimilarSongs(Song song, Relationship rel, int depth = 0);
         List<Song> GetSongWithinDuration(int lowerLimit, int upperLimit);
         List<Song> GetSongWithinTempo(int lowerLimit, int upperLimit);
     }
@@ -140,7 +141,8 @@ namespace HeyManCanYouRecommendSomeMusic.Services
                                          "WHERE s1.id = {id1} AND s2.id = {id2}" +
                                           "CREATE (s1)-[:" + rel.ToString() + "]->(s2)", queryDict, CypherResultMode.Set);
 
-            ((IRawGraphClient)client).ExecuteGetCypherResults<Models.Relationships.Relationship>(cypher);       
+            ((IRawGraphClient)client).ExecuteCypher(cypher);
+           //((IRawGraphClient)client).ExecuteGetCypherResults<Models.Relationships.Relationship>(cypher);       
         }
 
         public List<Song> GetSongsInRelationship(Models.Relationships.Relationship rel, int count = 5)
@@ -159,7 +161,7 @@ namespace HeyManCanYouRecommendSomeMusic.Services
             }
         }
 
-        public List<Song> GetSimilarSongs(Song song, MiscRelationship rel, int depth = 0)
+        public List<Song> GetSimilarSongs(Song song, Relationship rel, int depth = 0)
         {
             List<Song> songs = new List<Song>();
             Dictionary<string, object> queryDict = new Dictionary<string, object>();

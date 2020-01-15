@@ -5,8 +5,6 @@ using System.Threading.Tasks;
 
 namespace HeyManCanYouRecommendSomeMusic.Models.Relationships
 {
-    public enum MiscRelationship { DISTORTED, DRONING, HEAVY }
-
     public abstract class Relationship
     {
         public abstract string GetName();
