@@ -1,0 +1,23 @@
+﻿@{
+    ViewData["Title"] = "Home";
+}
+
+	<div>
+		<div>
+			<button id="populate" class="btn btn-danger">POPULATE</button>
+			<form action="javascript:void(0)" method="post" onsubmit="submitSong()" class="form-inline">
+				<input type="text" class="form-control" id="songInput" style="width: 80%" />
+				<input type="submit" class="btn btn-primary" value="SUBMIT" />
+			</form>
+		</div>
+		<div id="info"></div>
+		<div id="SongName"></div>
+	</div>
+
+<div id="SongLists" style="display:none">
+	@Html.Partial("_SongLists")
+</div>
+
+<div id="NewSongForm" style="display:none">
+	@Html.Partial("_NewSongForm")
+</div>
