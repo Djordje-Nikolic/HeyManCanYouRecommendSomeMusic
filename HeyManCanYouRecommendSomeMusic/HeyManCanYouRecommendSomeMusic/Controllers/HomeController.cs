@@ -121,7 +121,7 @@ namespace HeyManCanYouRecommendSomeMusic.Controllers
         [HttpPost("populate")]
         public async Task<JsonResult> Populate()
         {
-            //await Deezer();
+            await Deezer();
             return new JsonResult(new { succ = true });
         }
 
